@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiniela Mundial 2026 | Zseries</title>
+  <link rel="icon" type="image/png" href="/img/pelota.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+  <!-- ════════════════════════════════════════════════════ -->
+  <!--  LOGIN OVERLAY                                       -->
+  <!-- ════════════════════════════════════════════════════ -->
+  <div class="login-overlay" id="login-overlay">
+    <div class="login-card">
+      <img class="login-logo" src="/img/logo_quiniela.png" alt="Quiniela Mundial 2026 | Zseries" />
+      <p class="login-sub">Pronostica · Compite · Gana</p>
+
+      <!-- Modo invitado -->
+      <button class="btn btn-guest" id="btn-guest">
+        <i class="fa-solid fa-eye"></i> Ver Tabla de posiciones
+      </button>
+
+      <div class="login-divider"><span>o accede como administrador</span></div>
+
+      <!-- Formulario admin -->
+      <div class="login-form">
+        <div class="login-input-wrap">
+          <i class="fa-solid fa-lock login-icon"></i>
+          <input type="password" id="login-password" placeholder="Contraseña de administrador"
+            onkeydown="if(event.key==='Enter') Auth.login()" autocomplete="current-password" />
+          <button class="login-eye" id="login-eye" type="button" onclick="Auth.toggleEye()">
+            <i class="fa-solid fa-eye" id="eye-icon"></i>
+          </button>
+        </div>
+        <div class="login-error" id="login-error"></div>
+        <button class="btn btn-gold login-submit" onclick="Auth.login()">
+          <i class="fa-solid fa-right-to-bracket"></i> Entrar como Admin
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <img class="sidebar-logo" src="/img/logo_quiniela.png" alt="Quiniela Mundial 2026 | Zseries" />
+    </div>
+
+    <!-- Badge de sesión -->
+    <div class="session-badge" id="session-badge"></div>
+
+    <div class="nav-section-label">MENÚ</div>
+    <ul class="nav-links">
+      <li><a href="#" class="nav-link active" data-page="standings">
+        <i class="fa-solid fa-trophy"></i><span>Tabla de posiciones</span>
+      </a></li>
+      <!-- Solo el administrador gestiona participantes -->
+      <li class="admin-only"><a href="#" class="nav-link" data-page="participants">
+        <i class="fa-solid fa-users"></i><span>Participantes</span>
+      </a></li>
+      <!-- Visibles para todos: el administrador edita, el participante solo consulta -->
+      <li><a href="#" class="nav-link" data-page="forecasts">
+        <i class="fa-solid fa-pen-to-square"></i><span>Vaticinios</span>
+      </a></li>
+      <li><a href="#" class="nav-link" data-page="results">
+        <i class="fa-solid fa-futbol"></i><span>Resultados reales</span>
+      </a></li>
+      <li><a href="#" class="nav-link" data-page="champion">
+        <i class="fa-solid fa-crown"></i><span>Campeón</span>
+      </a></li>
+      <li><a href="#" class="nav-link" data-page="detail">
+        <i class="fa-solid fa-chart-bar"></i><span>Detalle por jugador</span>
+      </a></li>
+    </ul>
+
+    <!-- Botón cerrar sesión -->
+    <div class="sidebar-logout admin-only" id="sidebar-logout">
+      <button class="btn btn-outline btn-sm" onclick="Auth.logout()">
+        <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
+      </button>
+    </div>
+
+    <div class="nav-section-label" style="margin-top:auto">CRITERIOS</div>
+    <div class="scoring-legend">
+      <div class="legend-item">
+        <span class="legend-badge exact">+3</span>
+        <span>Marcador exacto</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-badge winner">+1</span>
+        <span>Ganador / empate</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-badge miss">0</span>
+        <span>Resultado errado</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-badge champion">+5</span>
+        <span>Campeón acertado</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MOBILE HEADER -->
+  <header class="mobile-header">
+    <button class="menu-toggle" id="menu-toggle" aria-label="Menú">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+    <div class="mobile-title"><img class="mobile-ball" src="/img/pelota.png" alt="" /> Quiniela Zseries | Mundial 2026</div>
+    <!-- Badge de modo en mobile -->
+    <div class="mobile-mode-badge" id="mobile-mode-badge"></div>
+  </header>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <!-- STANDINGS PAGE -->
+    <section class="page active" id="page-standings">
+      <div class="home-hero">
+        <img class="home-banner" src="/img/banner.png" alt="Quiniela Mundial 2026 | Zseries" />
+      </div>
+      <div class="page-header standings-header">
+        <img class="spin-ball" src="/img/pelota.png" alt="" />
+        <h1>Tabla de posiciones</h1>
+      </div>
+      <!-- Indicador de marcadores en vivo (se llena por JS según /api/live/status) -->
+      <div class="live-banner" id="live-banner" style="display:none"></div>
+      <div class="stats-grid" id="stats-grid"></div>
+      <div class="card" id="standings-card">
+        <div class="card-header">
+          <span><img class="trophy-icon" src="/img/trofeo.png" alt="" /> Ranking general</span>
+          <button class="btn btn-sm btn-outline" onclick="App.loadStandings()">
+            <i class="fa-solid fa-rotate-right"></i> Actualizar
+          </button>
+        </div>
+        <div id="standings-table-wrap"></div>
+      </div>
+    </section>
+
+    <!-- PARTICIPANTS PAGE (admin) -->
+    <section class="page" id="page-participants">
+      <div class="page-header">
+        <h1>Participantes</h1>
+        <p class="page-sub">Gestiona los jugadores de la quiniela</p>
+      </div>
+      <div class="card">
+        <div class="card-header"><i class="fa-solid fa-user-plus"></i> Agregar participante</div>
+        <div class="add-participant-form">
+          <input type="text" id="new-name" placeholder="Nombre del participante…" maxlength="40"
+            onkeydown="if(event.key==='Enter') App.addParticipant()" />
+          <button class="btn btn-gold" onclick="App.addParticipant()">
+            <i class="fa-solid fa-plus"></i> Agregar
+          </button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><i class="fa-solid fa-users"></i> Participantes registrados <span class="badge-count" id="participant-count">0</span></div>
+        <div id="participant-list"></div>
+      </div>
+    </section>
+
+    <!-- FORECASTS PAGE (admin) -->
+    <section class="page" id="page-forecasts">
+      <div class="page-header">
+        <h1>Vaticinios</h1>
+        <p class="page-sub" id="forecasts-sub">Ingresa las predicciones de cada participante</p>
+      </div>
+      <div class="card selector-card">
+        <div class="card-header"><i class="fa-solid fa-user"></i> Participante</div>
+        <div class="pill-tabs" id="forecast-participant-tabs"></div>
+      </div>
+      <div class="card" id="forecast-group-card">
+        <div class="card-header"><i class="fa-solid fa-layer-group"></i> Grupo</div>
+        <div class="pill-tabs" id="forecast-group-tabs"></div>
+      </div>
+      <div id="forecast-matches"></div>
+    </section>
+
+    <!-- RESULTS PAGE (admin) -->
+    <section class="page" id="page-results">
+      <div class="page-header">
+        <h1>Resultados reales</h1>
+        <p class="page-sub" id="results-sub">Ingresa los marcadores oficiales para calcular puntos</p>
+      </div>
+      <div class="card selector-card">
+        <div class="card-header"><i class="fa-solid fa-layer-group"></i> Grupo</div>
+        <div class="pill-tabs" id="results-group-tabs"></div>
+      </div>
+      <div id="results-matches"></div>
+    </section>
+
+    <!-- CHAMPION PAGE -->
+    <section class="page" id="page-champion">
+      <div class="page-header">
+        <h1><i class="fa-solid fa-crown" style="color:var(--gold)"></i> ¿Quién será el campeón?</h1>
+        <p class="page-sub" id="champion-sub">Elige, entre las 32 selecciones que llegaron a dieciseisavos, quién crees que se coronará campeona. Acertar suma +5 puntos.</p>
+      </div>
+
+      <!-- Solo el admin define la selección campeona real, al finalizar el torneo -->
+      <div class="card admin-only" id="champion-actual-card">
+        <div class="card-header"><i class="fa-solid fa-trophy"></i> Campeón real del torneo</div>
+        <div class="champion-actual-body">
+          <select id="champion-actual-select" onchange="App.setActualChampion(this.value)">
+            <option value="">— Aún sin definir —</option>
+          </select>
+          <p class="champion-actual-hint">Defínelo cuando finalice el Mundial para calcular automáticamente los +5 puntos.</p>
+        </div>
+      </div>
+
+      <div class="champion-banner" id="champion-actual-banner" style="display:none"></div>
+
+      <div class="card selector-card">
+        <div class="card-header"><i class="fa-solid fa-user"></i> Participante</div>
+        <div class="pill-tabs" id="champion-participant-tabs"></div>
+      </div>
+
+      <div class="card" id="champion-pick-card">
+        <div class="card-header"><i class="fa-solid fa-crown"></i> <span id="champion-pick-title">Pronóstico</span></div>
+        <div id="champion-grid" class="champion-grid"></div>
+      </div>
+    </section>
+
+    <!-- DETAIL PAGE (admin) -->
+    <section class="page" id="page-detail">
+      <div class="page-header">
+        <h1>Detalle por jugador</h1>
+        <p class="page-sub">Análisis partido a partido de cada participante</p>
+      </div>
+      <div class="card selector-card">
+        <div class="card-header"><i class="fa-solid fa-user"></i> Seleccionar participante</div>
+        <div class="pill-tabs" id="detail-participant-tabs"></div>
+      </div>
+      <div id="detail-summary"></div>
+      <div id="detail-matches"></div>
+    </section>
+
+  </main>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>
